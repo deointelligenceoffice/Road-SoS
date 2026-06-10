@@ -7,8 +7,7 @@ import { fetchNearbyServices, NearbyService } from '../services/emergencyService
 // Ensure native Mapbox SDK is initialized with a token fallback.
 // Replace the fallback token below with the project's public token for reliability.
 import Mapbox from '@rnmapbox/maps';
-Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || "pk.eyJ1IjoicmlzaGF2MTgiLCJhIjoiY21wemo4YTluMGdnZDJxcjJ5cGs0bG85eCJ9.serQeCr3mqHd6qrrtcI05A");
-
+Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || 
 type Props = { watch?: boolean };
 type VehicleProfile = 'car' | 'motorbike' | 'walking';
 type RouteInfo = { distance: number; duration: number; coordinates: [number, number][] };
