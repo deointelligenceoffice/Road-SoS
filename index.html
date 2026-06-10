@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoadSOS - Complete Prototype</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e57c2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .phone-frame {
+      width: 360px;
+      height: 720px;
+      background: white;
+      border-radius: 40px;
+      border: 12px solid #1a1a1a;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .phone-frame::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 28px;
+      background: #1a1a1a;
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      position: relative;
+    }
+
+    .screen.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .status-bar {
+      background: #C0392B;
+      padding: 10px 20px 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: white;
+      font-weight: 500;
+      margin-top: 12px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #C0392B 0%, #A83528 100%);
+      padding: 16px 20px 20px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 12px rgba(192, 57, 43, 0.2);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 18px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .hd-title {
+      font-size: 16px;
+      font-weight: 600;
+      flex: 1;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: #FFD700;
+    }
+
+    .tagline {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    .body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .body::-webkit-scrollbar-thumb {
+      background: #C0392B;
+      border-radius: 3px;
+    }
+
+    .note-box {
+      background: #f5f5f5;
+      border-left: 4px solid #C0392B;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .note-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #C0392B;
+      margin-bottom: 8px;
+    }
+
+    .note-text {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-size: 13px;
+      color: #666;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .inp {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      background: #f8f8f8;
+      font-size: 14px;
+      color: #333;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .inp:focus {
+      background: white;
+      border-color: #C0392B;
+      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+    }
+
+    .btn-red {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #C0392B 0%, #A83528 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(192, 57, 43, 0.2);
+    }
+
+    .btn-red:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
+    }
+
+    .btn-outline {
+      width: 100%;
+      padding: 12px;
+      background: white;
+      color: #333;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: #C0392B;
+      background: #fff5f5;
+    }
+
+    .user-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .user-card {
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .user-card:hover {
+      border-color: #C0392B;
+      background: #fff5f5;
+      transform: translateY(-2px);
+    }
+
+    .user-card-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .user-card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a2633;
+      margin-bottom: 4px;
+    }
+
+    .user-card-desc {
+      font-size: 10px;
+      color: #999;
+    }
+
+    .contact-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .contact-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #C0392B;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .contact-info {
+      flex: 1;
+    }
+
+    .cn {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a2633;
+      margin-bottom: 2px;
+    }
+
+    .cd {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 4px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .call-btn {
+      background: #C0392B;
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .call-btn:hover {
+      background: #A83528;
+      transform: scale(1.05);
+    }
+
+    .sos-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #C0392B 0%, #E74C3C 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
+      animation: pulse 2s infinite;
+      margin-top: auto;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
+      }
+      50% {
+        box-shadow: 0 6px 30px rgba(192, 57, 43, 0.5);
+      }
+    }
+
+    .map-container {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .map-icon {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .nav-bar {
+      display: flex;
+      gap: 0;
+      padding: 8px;
+      background: white;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .nav-item {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 8px 4px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 11px;
+      color: #999;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-item.active {
+      color: #C0392B;
+    }
+
+    .ni {
+      font-size: 18px;
+    }
+
+    .controls {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      margin-top: 20px;
+    }
+
+    .key {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    .service-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .service-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #C0392B;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone-frame">
+      <!-- SCREEN 1: NOTE + START -->
+      <div class="screen active" id="s-note">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="logo">Road<span>SOS</span></div>
+          <div class="tagline">Emergency Response Network</div>
+        </div>
+        <div class="body">
+          <div class="note-box">
+            <div class="note-title">📌 NOTE</div>
+            <div class="note-text">
+              This is a fully functional prototype. Click START to explore all features including emergency services, maps, history, and profile management.
+            </div>
+          </div>
+          <button class="btn-red" onclick="show('s-login')" style="margin-top: auto; margin-bottom: 20px;">START</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: LOGIN -->
+      <div class="screen" id="s-login">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="logo">Road<span>SOS</span></div>
+          <div class="tagline">Emergency Response Network</div>
+        </div>
+        <div class="body">
+          <div class="section-title">Sign In</div>
+          <input class="inp" placeholder="Email or Phone" />
+          <button class="btn-red" onclick="show('s-usertype')">Sign In</button>
+          <div style="text-align: center; font-size: 12px; color: #999; margin-top: 8px;">Or continue with</div>
+          <button class="btn-outline"><span>🔵</span> Google</button>
+          <button class="btn-outline"><span>📱</span> Phone OTP</button>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-item active"><span class="ni">🏠</span>Home</button>
+          <button class="nav-item" onclick="show('s-map')"><span class="ni">🗺️</span>Map</button>
+          <button class="nav-item" onclick="show('s-history')"><span class="ni">📋</span>History</button>
+          <button class="nav-item" onclick="show('s-profile')"><span class="ni">👤</span>Profile</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: USER TYPE SELECTION -->
+      <div class="screen" id="s-usertype">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">Select User Type</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="section-title">Who are you?</div>
+          <div class="user-type-grid">
+            <div class="user-card" onclick="show('s-home')">
+              <div class="user-card-icon">🙋</div>
+              <div class="user-card-name">Normal User</div>
+              <div class="user-card-desc">Request help</div>
+            </div>
+            <div class="user-card" onclick="show('s-home')">
+              <div class="user-card-icon">🚔</div>
+              <div class="user-card-name">Police</div>
+              <div class="user-card-desc">Manage station</div>
+            </div>
+            <div class="user-card" onclick="show('s-home')">
+              <div class="user-card-icon">🏥</div>
+              <div class="user-card-name">Hospital</div>
+              <div class="user-card-desc">Manage ambulance</div>
+            </div>
+            <div class="user-card" onclick="show('s-home')">
+              <div class="user-card-icon">🚦</div>
+              <div class="user-card-name">Traffic</div>
+              <div class="user-card-desc">Control traffic</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: HOME -->
+      <div class="screen" id="s-home">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="logo">Road<span>SOS</span></div>
+          <div class="tagline">Emergency Response Network</div>
+        </div>
+        <div class="body">
+          <div class="section-title">Emergency Services</div>
+          
+          <div class="service-card" onclick="show('s-police')">
+            <div class="avatar" style="background:#d6e4f7">🚔</div>
+            <div class="contact-info">
+              <div class="cn">Police</div>
+              <div class="cd">Nearest police station</div>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="service-card" onclick="show('s-hospital')">
+            <div class="avatar" style="background:#d5f0de">🏥</div>
+            <div class="contact-info">
+              <div class="cn">Hospital</div>
+              <div class="cd">24/7 emergency ward</div>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="service-card" onclick="show('s-ambulance')">
+            <div class="avatar" style="background:#fde8e8">🚑</div>
+            <div class="contact-info">
+              <div class="cn">Ambulance</div>
+              <div class="cd">Quick medical response</div>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="service-card" onclick="show('s-traffic')">
+            <div class="avatar" style="background:#fff3cd">🚦</div>
+            <div class="contact-info">
+              <div class="cn">Traffic Police</div>
+              <div class="cd">Report road incidents</div>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <button class="sos-btn">🆘 SOS - Emergency Alert</button>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-item active"><span class="ni">🏠</span>Home</button>
+          <button class="nav-item" onclick="show('s-map')"><span class="ni">🗺️</span>Map</button>
+          <button class="nav-item" onclick="show('s-history')"><span class="ni">📋</span>History</button>
+          <button class="nav-item" onclick="show('s-profile')"><span class="ni">👤</span>Profile</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: MAP -->
+      <div class="screen" id="s-map">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">Map</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="map-container">
+            <div class="map-content">
+              <div class="map-icon">🗺️</div>
+              <div>Live Map View</div>
+            </div>
+          </div>
+
+          <div class="section-title">Nearby Services</div>
+          
+          <div class="contact-card">
+            <div class="avatar" style="background:#d6e4f7">🚔</div>
+            <div class="contact-info">
+              <div class="cn">Koramangala Police</div>
+              <div class="cd">0.5 km away</div>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#d5f0de">🏥</div>
+            <div class="contact-info">
+              <div class="cn">Apollo Hospital</div>
+              <div class="cd">0.8 km away</div>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#fde8e8">🚑</div>
+            <div class="contact-info">
+              <div class="cn">108 Ambulance</div>
+              <div class="cd">Instant dispatch</div>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-item" onclick="show('s-home')"><span class="ni">🏠</span>Home</button>
+          <button class="nav-item active"><span class="ni">🗺️</span>Map</button>
+          <button class="nav-item" onclick="show('s-history')"><span class="ni">📋</span>History</button>
+          <button class="nav-item" onclick="show('s-profile')"><span class="ni">👤</span>Profile</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 6: POLICE -->
+      <div class="screen" id="s-police">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">Police</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="section-title">Police stations</div>
+          
+          <div class="contact-card">
+            <div class="avatar" style="background:#d6e4f7">🚔</div>
+            <div class="contact-info">
+              <div class="cn">Koramangala Police Station</div>
+              <div class="cd">0.5 km away</div>
+              <span class="tag">✓ Verified</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#d6e4f7">🚔</div>
+            <div class="contact-info">
+              <div class="cn">Adyar Police Station</div>
+              <div class="cd">1.2 km away</div>
+              <span class="tag">✓ Verified</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#d6e4f7">🚔</div>
+            <div class="contact-info">
+              <div class="cn">National Helpline</div>
+              <div class="cd">Police — All India</div>
+              <span class="tag">Dial 100</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 7: HOSPITAL -->
+      <div class="screen" id="s-hospital">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">Hospitals</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="section-title">Nearby hospitals</div>
+          
+          <div class="contact-card">
+            <div class="avatar" style="background:#d5f0de">🏥</div>
+            <div class="contact-info">
+              <div class="cn">Apollo Hospital</div>
+              <div class="cd">0.8 km · 24/7 Emergency</div>
+              <span class="tag">Trauma care</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#d5f0de">🏥</div>
+            <div class="contact-info">
+              <div class="cn">Govt. General Hospital</div>
+              <div class="cd">2.1 km · Free treatment</div>
+              <span class="tag">Govt. facility</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#d5f0de">🏥</div>
+            <div class="contact-info">
+              <div class="cn">Max Hospital</div>
+              <div class="cd">1.5 km · Advanced care</div>
+              <span class="tag">✓ Verified</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 8: AMBULANCE -->
+      <div class="screen" id="s-ambulance">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">Ambulance</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="section-title">Ambulance services</div>
+          
+          <div class="contact-card">
+            <div class="avatar" style="background:#fde8e8">🚑</div>
+            <div class="contact-info">
+              <div class="cn">108 Ambulance</div>
+              <div class="cd">National Emergency</div>
+              <span class="tag" style="background:#fde8e8; color:#C0392B">Dial 108</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#fde8e8">🚑</div>
+            <div class="contact-info">
+              <div class="cn">Apollo Ambulance</div>
+              <div class="cd">4 units · 1.2 km away</div>
+              <span class="tag">Available now</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#fde8e8">🚑</div>
+            <div class="contact-info">
+              <div class="cn">Max Ambulance</div>
+              <div class="cd">6 units · 2.0 km away</div>
+              <span class="tag">Available now</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <button class="sos-btn">🚑 Dispatch Ambulance Now</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 9: TRAFFIC -->
+      <div class="screen" id="s-traffic">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">Traffic Police</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="section-title">Traffic control</div>
+          
+          <div class="contact-card">
+            <div class="avatar" style="background:#fff3cd">🚦</div>
+            <div class="contact-info">
+              <div class="cn">Traffic Control Room</div>
+              <div class="cd">Guindy, Chennai</div>
+              <span class="tag">24/7 Active</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#fff3cd">🚦</div>
+            <div class="contact-info">
+              <div class="cn">Highway Patrol Unit</div>
+              <div class="cd">NH-44 Stretch</div>
+              <span class="tag">✓ Verified</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#fff3cd">🚦</div>
+            <div class="contact-info">
+              <div class="cn">Traffic Hotline</div>
+              <div class="cd">Report incidents fast</div>
+              <span class="tag">Dial 1095</span>
+            </div>
+            <button class="call-btn">📞</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 10: HISTORY -->
+      <div class="screen" id="s-history">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">History</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="section-title">Recent calls</div>
+          
+          <div class="contact-card">
+            <div class="avatar" style="background:#d6e4f7">🚔</div>
+            <div class="contact-info">
+              <div class="cn">Police - Koramangala</div>
+              <div class="cd">Today · 2:30 PM</div>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#d5f0de">🏥</div>
+            <div class="contact-info">
+              <div class="cn">Apollo Hospital</div>
+              <div class="cd">Yesterday · 5:15 PM</div>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#fde8e8">🚑</div>
+            <div class="contact-info">
+              <div class="cn">108 Ambulance</div>
+              <div class="cd">Last week · 10:00 AM</div>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <div class="avatar" style="background:#fff3cd">🚦</div>
+            <div class="contact-info">
+              <div class="cn">Traffic Control</div>
+              <div class="cd">2 weeks ago · 3:45 PM</div>
+            </div>
+          </div>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-item" onclick="show('s-home')"><span class="ni">🏠</span>Home</button>
+          <button class="nav-item" onclick="show('s-map')"><span class="ni">🗺️</span>Map</button>
+          <button class="nav-item active"><span class="ni">📋</span>History</button>
+          <button class="nav-item" onclick="show('s-profile')"><span class="ni">👤</span>Profile</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 11: PROFILE -->
+      <div class="screen" id="s-profile">
+        <div class="status-bar"><span>9:41</span><span>RoadSOS</span><span>100%</span></div>
+        <div class="header">
+          <div class="header-row">
+            <button class="back-btn" onclick="back()">←</button>
+            <span class="hd-title">Profile</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="section-title">👤 My Profile</div>
+          
+          <div class="contact-card" style="border-left: 3px solid #C0392B">
+            <div class="avatar" style="background: #fde8e8; font-size: 24px">👨</div>
+            <div class="contact-info">
+              <div class="cn">Rishav Raj</div>
+              <div class="cd">Patna, India</div>
+            </div>
+          </div>
+
+          <button class="btn-outline">📞 Emergency Contacts</button>
+          <button class="btn-outline">📋 Medical Info</button>
+          <button class="btn-outline">⚙️ Settings</button>
+          <button class="btn-outline">📞 Help & Support</button>
+          <button class="btn-outline">🚪 Logout</button>
+        </div>
+        <div class="nav-bar">
+          <button class="nav-item" onclick="show('s-home')"><span class="ni">🏠</span>Home</button>
+          <button class="nav-item" onclick="show('s-map')"><span class="ni">🗺️</span>Map</button>
+          <button class="nav-item" onclick="show('s-history')"><span class="ni">📋</span>History</button>
+          <button class="nav-item active"><span class="ni">👤</span>Profile</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="controls">
+      <p>← Back Button | <span class="key">←</span> Arrow Left to Go Back | <span class="key">ESC</span> Exit</p>
+      <p style="font-size: 11px; margin-top: 8px; opacity: 0.7;">Click through all screens to see the complete prototype!</p>
+    </div>
+  </div>
+
+  <script>
+    const screenHistory = ['s-note'];
+
+    function show(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      screenHistory.push(id);
+    }
+
+    function back() {
+      if (screenHistory.length > 1) {
+        screenHistory.pop();
+        const previousScreen = screenHistory[screenHistory.length - 1];
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(previousScreen).classList.add('active');
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        back();
+      } else if (e.key === 'Escape') {
+        show('s-note');
+        screenHistory.length = 1;
+      }
+    });
+  </script>
+</body>
+</html>                                                        
