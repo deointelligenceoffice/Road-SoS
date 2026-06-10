@@ -7,7 +7,8 @@ import { fetchNearbyServices, NearbyService } from '../services/emergencyService
 // Ensure native Mapbox SDK is initialized with a token fallback.
 // Replace the fallback token below with the project's public token for reliability.
 import Mapbox from '@rnmapbox/maps';
-Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || 
+Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || .processenv.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN
+
 type Props = { watch?: boolean };
 type VehicleProfile = 'car' | 'motorbike' | 'walking';
 type RouteInfo = { distance: number; duration: number; coordinates: [number, number][] };
@@ -18,7 +19,7 @@ const vehicleLabels: Record<VehicleProfile, string> = { car: 'Car', motorbike: '
 
 // Get token from Constants, env, or fallback
 const runtimeExtra = Constants.expoConfig?.extra ?? (Constants.manifest as any)?.extra ?? {};
-const mapboxToken = runtimeExtra.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN
+const mapboxToken = runtimeExtra.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN || .processenv.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN
 
 let MapboxGL: any = null;
 try {
